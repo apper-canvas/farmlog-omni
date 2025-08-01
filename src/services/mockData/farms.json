@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "name": "Green Valley Farm",
+    "size": 25.5,
+    "sizeUnit": "acres",
+    "location": "Northern California",
+    "createdAt": "2024-01-15T08:00:00Z"
+  },
+  {
+    "Id": 2,
+    "name": "Sunset Organic Farm",
+    "size": 42.0,
+    "sizeUnit": "acres",
+    "location": "Central Valley, CA",
+    "createdAt": "2024-02-20T10:30:00Z"
+  },
+  {
+    "Id": 3,
+    "name": "Prairie View Ranch",
+    "size": 120.0,
+    "sizeUnit": "acres",
+    "location": "Nebraska Plains",
+    "createdAt": "2024-03-10T09:15:00Z"
+  }
+]

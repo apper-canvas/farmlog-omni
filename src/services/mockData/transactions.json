@@ -1,0 +1,102 @@
+[
+  {
+    "Id": 1,
+    "farmId": 1,
+    "type": "expense",
+    "category": "seeds",
+    "amount": 245.50,
+    "date": "2024-03-10T00:00:00Z",
+    "description": "Tomato and lettuce seeds for spring planting",
+    "paymentMethod": "credit_card"
+  },
+  {
+    "Id": 2,
+    "farmId": 1,
+    "type": "expense",
+    "category": "fertilizer",
+    "amount": 180.00,
+    "date": "2024-03-15T00:00:00Z",
+    "description": "Organic fertilizer for vegetable crops",
+    "paymentMethod": "cash"
+  },
+  {
+    "Id": 3,
+    "farmId": 2,
+    "type": "expense",
+    "category": "seeds",
+    "amount": 850.00,
+    "date": "2024-04-05T00:00:00Z",
+    "description": "Corn and soybean seeds",
+    "paymentMethod": "check"
+  },
+  {
+    "Id": 4,
+    "farmId": 1,
+    "type": "income",
+    "category": "crop_sales",
+    "amount": 1200.00,
+    "date": "2024-05-20T00:00:00Z",
+    "description": "Spring lettuce harvest sales",
+    "paymentMethod": "bank_transfer"
+  },
+  {
+    "Id": 5,
+    "farmId": 3,
+    "type": "expense",
+    "category": "equipment",
+    "amount": 2500.00,
+    "date": "2024-03-25T00:00:00Z",
+    "description": "New cultivator attachment for tractor",
+    "paymentMethod": "credit_card"
+  },
+  {
+    "Id": 6,
+    "farmId": 2,
+    "type": "expense",
+    "category": "fuel",
+    "amount": 320.00,
+    "date": "2024-05-15T00:00:00Z",
+    "description": "Diesel fuel for planting operations",
+    "paymentMethod": "cash"
+  },
+  {
+    "Id": 7,
+    "farmId": 1,
+    "type": "expense",
+    "category": "labor",
+    "amount": 480.00,
+    "date": "2024-04-20T00:00:00Z",
+    "description": "Seasonal workers for transplanting",
+    "paymentMethod": "cash"
+  },
+  {
+    "Id": 8,
+    "farmId": 3,
+    "type": "income",
+    "category": "government_subsidy",
+    "amount": 1500.00,
+    "date": "2024-04-01T00:00:00Z",
+    "description": "Conservation program payment",
+    "paymentMethod": "bank_transfer"
+  },
+  {
+    "Id": 9,
+    "farmId": 2,
+    "type": "expense",
+    "category": "irrigation",
+    "amount": 650.00,
+    "date": "2024-05-10T00:00:00Z",
+    "description": "Irrigation system maintenance and repairs",
+    "paymentMethod": "check"
+  },
+  {
+    "Id": 10,
+    "farmId": 1,
+    "type": "income",
+    "category": "crop_sales",
+    "amount": 800.00,
+    "date": "2024-06-10T00:00:00Z",
+    "description": "Early tomato sales to local market",
+    "paymentMethod": "cash"
+  }
+]

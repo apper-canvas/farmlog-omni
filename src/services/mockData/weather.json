@@ -1,0 +1,58 @@
+[
+  {
+    "date": "2024-06-14T00:00:00Z",
+    "tempHigh": 78,
+    "tempLow": 58,
+    "precipitation": 0.2,
+    "conditions": "partly cloudy",
+    "alerts": ["Light rain expected in the afternoon"]
+  },
+  {
+    "date": "2024-06-15T00:00:00Z",
+    "tempHigh": 82,
+    "tempLow": 62,
+    "precipitation": 0.0,
+    "conditions": "sunny",
+    "alerts": []
+  },
+  {
+    "date": "2024-06-16T00:00:00Z",
+    "tempHigh": 85,
+    "tempLow": 65,
+    "precipitation": 0.0,
+    "conditions": "sunny",
+    "alerts": []
+  },
+  {
+    "date": "2024-06-17T00:00:00Z",
+    "tempHigh": 79,
+    "tempLow": 59,
+    "precipitation": 0.4,
+    "conditions": "rain showers",
+    "alerts": []
+  },
+  {
+    "date": "2024-06-18T00:00:00Z",
+    "tempHigh": 76,
+    "tempLow": 56,
+    "precipitation": 0.8,
+    "conditions": "heavy rain",
+    "alerts": ["Heavy rainfall warning - potential flooding in low areas"]
+  },
+  {
+    "date": "2024-06-19T00:00:00Z",
+    "tempHigh": 73,
+    "tempLow": 54,
+    "precipitation": 0.1,
+    "conditions": "cloudy",
+    "alerts": []
+  },
+  {
+    "date": "2024-06-20T00:00:00Z",
+    "tempHigh": 80,
+    "tempLow": 60,
+    "precipitation": 0.0,
+    "conditions": "partly sunny",
+    "alerts": []
+  }
+]

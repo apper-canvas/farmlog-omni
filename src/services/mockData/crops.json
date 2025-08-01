@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "farmId": 1,
+    "cropType": "tomatoes",
+    "plantingDate": "2024-03-15T00:00:00Z",
+    "expectedHarvest": "2024-07-01T00:00:00Z",
+    "quantity": 500.0,
+    "unit": "pounds",
+    "fieldLocation": "North Field A",
+    "growthStage": "flowering",
+    "status": "active"
+  },
+  {
+    "Id": 2,
+    "farmId": 1,
+    "cropType": "lettuce",
+    "plantingDate": "2024-04-01T00:00:00Z",
+    "expectedHarvest": "2024-06-15T00:00:00Z",
+    "quantity": 200.0,
+    "unit": "pounds",
+    "fieldLocation": "South Field B",
+    "growthStage": "ready",
+    "status": "active"
+  },
+  {
+    "Id": 3,
+    "farmId": 2,
+    "cropType": "corn",
+    "plantingDate": "2024-04-10T00:00:00Z",
+    "expectedHarvest": "2024-09-15T00:00:00Z",
+    "quantity": 2000.0,
+    "unit": "bushels",
+    "fieldLocation": "East Field 1",
+    "growthStage": "growing",
+    "status": "active"
+  },
+  {
+    "Id": 4,
+    "farmId": 2,
+    "cropType": "soybeans",
+    "plantingDate": "2024-05-01T00:00:00Z",
+    "expectedHarvest": "2024-10-01T00:00:00Z",
+    "quantity": 1500.0,
+    "unit": "bushels",
+    "fieldLocation": "West Field 2",
+    "growthStage": "planted",
+    "status": "active"
+  },
+  {
+    "Id": 5,
+    "farmId": 3,
+    "cropType": "wheat",
+    "plantingDate": "2024-03-01T00:00:00Z",
+    "expectedHarvest": "2024-07-20T00:00:00Z",
+    "quantity": 3000.0,
+    "unit": "bushels",
+    "fieldLocation": "Main Field",
+    "growthStage": "ripening",
+    "status": "active"
+  },
+  {
+    "Id": 6,
+    "farmId": 1,
+    "cropType": "carrots",
+    "plantingDate": "2024-03-20T00:00:00Z",
+    "expectedHarvest": "2024-06-20T00:00:00Z",
+    "quantity": 300.0,
+    "unit": "pounds",
+    "fieldLocation": "South Field C",
+    "growthStage": "growing",
+    "status": "active"
+  }
+]

@@ -1,0 +1,90 @@
+[
+  {
+    "Id": 1,
+    "farmId": 1,
+    "cropId": 1,
+    "title": "Water tomato plants",
+    "type": "watering",
+    "dueDate": "2024-06-15T09:00:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Deep watering needed due to hot weather"
+  },
+  {
+    "Id": 2,
+    "farmId": 1,
+    "cropId": 2,
+    "title": "Harvest lettuce crop",
+    "type": "harvesting",
+    "dueDate": "2024-06-14T07:00:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Ready for harvest, check for pest damage"
+  },
+  {
+    "Id": 3,
+    "farmId": 2,
+    "cropId": 3,
+    "title": "Apply nitrogen fertilizer",
+    "type": "fertilizing",
+    "dueDate": "2024-06-18T08:00:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Side-dress application for corn growth stage"
+  },
+  {
+    "Id": 4,
+    "farmId": 1,
+    "cropId": null,
+    "title": "Repair irrigation system",
+    "type": "maintenance",
+    "dueDate": "2024-06-16T10:00:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Fix broken sprinkler head in North Field A"
+  },
+  {
+    "Id": 5,
+    "farmId": 3,
+    "cropId": 5,
+    "title": "Check wheat for pests",
+    "type": "pest_control",
+    "dueDate": "2024-06-17T06:30:00Z",
+    "completed": true,
+    "completedDate": "2024-06-16T14:30:00Z",
+    "notes": "Weekly pest inspection completed"
+  },
+  {
+    "Id": 6,
+    "farmId": 2,
+    "cropId": 4,
+    "title": "Cultivate soybean rows",
+    "type": "maintenance",
+    "dueDate": "2024-06-20T08:00:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Remove weeds between rows"
+  },
+  {
+    "Id": 7,
+    "farmId": 1,
+    "cropId": 6,
+    "title": "Thin carrot seedlings",
+    "type": "maintenance",
+    "dueDate": "2024-06-12T09:00:00Z",
+    "completed": true,
+    "completedDate": "2024-06-12T11:15:00Z",
+    "notes": "Thinned to proper spacing for optimal growth"
+  },
+  {
+    "Id": 8,
+    "farmId": 1,
+    "cropId": 1,
+    "title": "Stake tomato plants",
+    "type": "maintenance",
+    "dueDate": "2024-06-19T08:30:00Z",
+    "completed": false,
+    "completedDate": null,
+    "notes": "Install support stakes as plants grow taller"
+  }
+]
