@@ -4,6 +4,7 @@ import CropCard from "@/components/molecules/CropCard";
 import AddCropModal from "@/components/organisms/AddCropModal";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
+import Input from "@/components/atoms/Input";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
@@ -14,7 +15,7 @@ import transactionService from "@/services/api/transactionService";
 import { toast } from "react-toastify";
 
 const Crops = () => {
-  const [crops, setCrops] = useState([]);
+const [crops, setCrops] = useState([]);
   const [farms, setFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,7 +23,7 @@ const Crops = () => {
   const [editingCrop, setEditingCrop] = useState(null);
   const [filterFarm, setFilterFarm] = useState("");
   const [filterStage, setFilterStage] = useState("");
-
+  const [searchQuery, setSearchQuery] = useState("");
   const loadData = async () => {
     try {
       setLoading(true);
@@ -114,12 +115,18 @@ const Crops = () => {
   };
 
   // Filter crops
-  const filteredCrops = crops.filter(crop => {
+const filteredCrops = crops.filter(crop => {
     const farmMatch = !filterFarm || crop.farmId === parseInt(filterFarm);
     const stageMatch = !filterStage || crop.growthStage === filterStage;
     const activeMatch = crop.status === "active"; // Only show active crops
     
-    return farmMatch && stageMatch && activeMatch;
+    // Text search match
+    const searchMatch = !searchQuery || 
+      crop.cropName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      crop.variety.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      crop.growthStage.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return farmMatch && stageMatch && activeMatch && searchMatch;
   });
 
   const getFarmName = (farmId) => {
@@ -143,51 +150,75 @@ const Crops = () => {
       </Header>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <div className="flex flex-wrap gap-4">
-          <div className="min-w-48">
-            <Select
-              value={filterFarm}
-              onChange={(e) => setFilterFarm(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Farms</option>
-              {farms.map((farm) => (
-                <option key={farm.Id} value={farm.Id}>
-                  {farm.name}
-                </option>
-              ))}
-            </Select>
+<div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <ApperIcon name="Search" size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search crops by name or variety..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <ApperIcon name="X" size={14} />
+              </button>
+            )}
           </div>
           
-          <div className="min-w-48">
-            <Select
-              value={filterStage}
-              onChange={(e) => setFilterStage(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Growth Stages</option>
-              <option value="planted">Planted</option>
-              <option value="growing">Growing</option>
-              <option value="flowering">Flowering</option>
-              <option value="ripening">Ripening</option>
-              <option value="ready">Ready</option>
-            </Select>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4">
+            <div className="min-w-48">
+              <Select
+                value={filterFarm}
+                onChange={(e) => setFilterFarm(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Farms</option>
+                {farms.map((farm) => (
+                  <option key={farm.Id} value={farm.Id}>
+                    {farm.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            
+            <div className="min-w-48">
+              <Select
+                value={filterStage}
+                onChange={(e) => setFilterStage(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Growth Stages</option>
+                <option value="planted">Planted</option>
+                <option value="growing">Growing</option>
+                <option value="flowering">Flowering</option>
+                <option value="ripening">Ripening</option>
+                <option value="ready">Ready</option>
+              </Select>
+            </div>
+            
+            {(filterFarm || filterStage || searchQuery) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setFilterFarm("");
+                  setFilterStage("");
+                  setSearchQuery("");
+                }}
+              >
+                <ApperIcon name="X" size={14} className="mr-1" />
+                Clear All
+              </Button>
+            )}
           </div>
-          
-          {(filterFarm || filterStage) && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setFilterFarm("");
-                setFilterStage("");
-              }}
-            >
-              <ApperIcon name="X" size={14} className="mr-1" />
-              Clear Filters
-            </Button>
-          )}
         </div>
       </div>
 
@@ -205,8 +236,9 @@ const Crops = () => {
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-600">
+<p className="text-gray-600">
               Showing {filteredCrops.length} crop{filteredCrops.length !== 1 ? 's' : ''}
+              {searchQuery && ` matching "${searchQuery}"`}
               {filterFarm && ` from ${getFarmName(parseInt(filterFarm))}`}
               {filterStage && ` in ${filterStage} stage`}
             </p>

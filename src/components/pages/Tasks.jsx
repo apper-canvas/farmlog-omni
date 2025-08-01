@@ -17,9 +17,9 @@ import Farms from "@/components/pages/Farms";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
-
+import Input from "@/components/atoms/Input";
 const Tasks = () => {
-  const [tasks, setTasks] = useState([]);
+const [tasks, setTasks] = useState([]);
   const [farms, setFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,6 +28,7 @@ const Tasks = () => {
   const [filterFarm, setFilterFarm] = useState("");
   const [filterStatus, setFilterStatus] = useState("pending");
   const [filterType, setFilterType] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("list"); // "list" or "calendar"
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [notificationSettings, setNotificationSettings] = useState({
@@ -142,7 +143,7 @@ const handleSaveTask = async (taskData) => {
   // Filter and sort tasks
 
   // Filter and sort tasks
-  const filteredTasks = tasks.filter(task => {
+const filteredTasks = tasks.filter(task => {
     const farmMatch = !filterFarm || task.farmId === parseInt(filterFarm);
     const typeMatch = !filterType || task.type === filterType;
     
@@ -157,7 +158,13 @@ const handleSaveTask = async (taskData) => {
       statusMatch = !task.completed && isToday(new Date(task.dueDate));
     }
     
-    return farmMatch && typeMatch && statusMatch;
+    // Text search match
+    const searchMatch = !searchQuery || 
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.type.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return farmMatch && typeMatch && statusMatch && searchMatch;
   }).sort((a, b) => {
     // Sort by due date, with overdue first
     const aDate = new Date(a.dueDate);
@@ -268,67 +275,91 @@ return (
         <>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <div className="flex flex-wrap gap-4">
-          <div className="min-w-48">
-            <Select
-              value={filterFarm}
-              onChange={(e) => setFilterFarm(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Farms</option>
-              {farms.map((farm) => (
-                <option key={farm.Id} value={farm.Id}>
-                  {farm.name}
-                </option>
-              ))}
-            </Select>
+<div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <ApperIcon name="Search" size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search tasks by title or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <ApperIcon name="X" size={14} />
+              </button>
+            )}
           </div>
           
-          <div className="min-w-48">
-            <Select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="text-sm"
-            >
-              <option value="pending">Pending Tasks</option>
-              <option value="completed">Completed Tasks</option>
-              <option value="overdue">Overdue Tasks</option>
-              <option value="today">Due Today</option>
-              <option value="">All Tasks</option>
-            </Select>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4">
+            <div className="min-w-48">
+              <Select
+                value={filterFarm}
+                onChange={(e) => setFilterFarm(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Farms</option>
+                {farms.map((farm) => (
+                  <option key={farm.Id} value={farm.Id}>
+                    {farm.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            
+            <div className="min-w-48">
+              <Select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="text-sm"
+              >
+                <option value="pending">Pending Tasks</option>
+                <option value="completed">Completed Tasks</option>
+                <option value="overdue">Overdue Tasks</option>
+                <option value="today">Due Today</option>
+                <option value="">All Tasks</option>
+              </Select>
+            </div>
+            
+            <div className="min-w-48">
+              <Select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Types</option>
+                <option value="watering">Watering</option>
+                <option value="fertilizing">Fertilizing</option>
+                <option value="harvesting">Harvesting</option>
+                <option value="planting">Planting</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="pest_control">Pest Control</option>
+              </Select>
+            </div>
+            
+            {(filterFarm || filterType || filterStatus !== "pending" || searchQuery) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setFilterFarm("");
+                  setFilterType("");
+                  setFilterStatus("pending");
+                  setSearchQuery("");
+                }}
+              >
+                <ApperIcon name="X" size={14} className="mr-1" />
+                Clear All
+              </Button>
+            )}
           </div>
-          
-          <div className="min-w-48">
-            <Select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Types</option>
-              <option value="watering">Watering</option>
-              <option value="fertilizing">Fertilizing</option>
-              <option value="harvesting">Harvesting</option>
-              <option value="planting">Planting</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="pest_control">Pest Control</option>
-            </Select>
-          </div>
-          
-          {(filterFarm || filterType || filterStatus !== "pending") && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setFilterFarm("");
-                setFilterType("");
-                setFilterStatus("pending");
-              }}
-            >
-              <ApperIcon name="X" size={14} className="mr-1" />
-              Clear Filters
-            </Button>
-          )}
         </div>
       </div>
 
@@ -346,8 +377,9 @@ return (
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-600">
+<p className="text-gray-600">
               Showing {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''}
+              {searchQuery && ` matching "${searchQuery}"`}
               {filterFarm && ` from ${getFarmName(parseInt(filterFarm))}`}
             </p>
           </div>

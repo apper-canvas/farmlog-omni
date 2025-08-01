@@ -4,6 +4,7 @@ import StatCard from "@/components/molecules/StatCard";
 import AddTransactionModal from "@/components/organisms/AddTransactionModal";
 import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
+import Input from "@/components/atoms/Input";
 import Badge from "@/components/atoms/Badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
 import Loading from "@/components/ui/Loading";
@@ -15,9 +16,8 @@ import farmService from "@/services/api/farmService";
 import { toast } from "react-toastify";
 import { format, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 import Chart from "react-apexcharts";
-
 const Finances = () => {
-  const [transactions, setTransactions] = useState([]);
+const [transactions, setTransactions] = useState([]);
   const [farms, setFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -26,7 +26,7 @@ const Finances = () => {
   const [filterFarm, setFilterFarm] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterPeriod, setFilterPeriod] = useState("all");
-
+  const [searchQuery, setSearchQuery] = useState("");
   const loadData = async () => {
     try {
       setLoading(true);
@@ -98,7 +98,7 @@ const Finances = () => {
   };
 
   // Filter transactions
-  const getFilteredTransactions = () => {
+const getFilteredTransactions = () => {
     let filtered = transactions;
     
     if (filterFarm) {
@@ -107,6 +107,15 @@ const Finances = () => {
     
     if (filterType) {
       filtered = filtered.filter(t => t.type === filterType);
+    }
+    
+    // Text search filter
+    if (searchQuery) {
+      filtered = filtered.filter(t => 
+        t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (t.paymentMethod && t.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
     }
     
     if (filterPeriod !== "all") {
@@ -276,61 +285,85 @@ const Finances = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-        <div className="flex flex-wrap gap-4">
-          <div className="min-w-48">
-            <Select
-              value={filterFarm}
-              onChange={(e) => setFilterFarm(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Farms</option>
-              {farms.map((farm) => (
-                <option key={farm.Id} value={farm.Id}>
-                  {farm.name}
-                </option>
-              ))}
-            </Select>
+<div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <ApperIcon name="Search" size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search transactions by description or category..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <ApperIcon name="X" size={14} />
+              </button>
+            )}
           </div>
           
-          <div className="min-w-48">
-            <Select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="text-sm"
-            >
-              <option value="">All Types</option>
-              <option value="income">Income</option>
-              <option value="expense">Expenses</option>
-            </Select>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4">
+            <div className="min-w-48">
+              <Select
+                value={filterFarm}
+                onChange={(e) => setFilterFarm(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Farms</option>
+                {farms.map((farm) => (
+                  <option key={farm.Id} value={farm.Id}>
+                    {farm.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            
+            <div className="min-w-48">
+              <Select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="text-sm"
+              >
+                <option value="">All Types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expenses</option>
+              </Select>
+            </div>
+            
+            <div className="min-w-48">
+              <Select
+                value={filterPeriod}
+                onChange={(e) => setFilterPeriod(e.target.value)}
+                className="text-sm"
+              >
+                <option value="all">All Time</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+              </Select>
+            </div>
+            
+            {(filterFarm || filterType || filterPeriod !== "all" || searchQuery) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setFilterFarm("");
+                  setFilterType("");
+                  setFilterPeriod("all");
+                  setSearchQuery("");
+                }}
+              >
+                <ApperIcon name="X" size={14} className="mr-1" />
+                Clear All
+              </Button>
+            )}
           </div>
-          
-          <div className="min-w-48">
-            <Select
-              value={filterPeriod}
-              onChange={(e) => setFilterPeriod(e.target.value)}
-              className="text-sm"
-            >
-              <option value="all">All Time</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </Select>
-          </div>
-          
-          {(filterFarm || filterType || filterPeriod !== "all") && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setFilterFarm("");
-                setFilterType("");
-                setFilterPeriod("all");
-              }}
-            >
-              <ApperIcon name="X" size={14} className="mr-1" />
-              Clear Filters
-            </Button>
-          )}
         </div>
       </div>
 
@@ -352,10 +385,18 @@ const Finances = () => {
           <CardTitle>Recent Transactions</CardTitle>
         </CardHeader>
         <CardContent>
+<div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+            <p className="text-gray-600">
+              Showing {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
+              {searchQuery && ` matching "${searchQuery}"`}
+            </p>
+          </div>
+          
           {filteredTransactions.length === 0 ? (
             <Empty
               title={transactions.length === 0 ? "No transactions yet" : "No transactions match your filters"}
-              description={transactions.length === 0 
+              description={transactions.length === 0
                 ? "Start by recording your first farm transaction" 
                 : "Try adjusting your filters to see more transactions"
               }
@@ -406,11 +447,22 @@ const Finances = () => {
                 </div>
               ))}
               
-              {filteredTransactions.length > 20 && (
+{filteredTransactions.length > 20 && (
                 <div className="text-center py-4">
                   <p className="text-gray-600">
-                    Showing 20 of {filteredTransactions.length} transactions
+                    Showing first 20 of {filteredTransactions.length} transactions
                   </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => {
+                      // This could be expanded to implement pagination
+                      toast.info("Pagination feature coming soon!");
+                    }}
+                  >
+                    Load More
+                  </Button>
                 </div>
               )}
             </div>
