@@ -24,19 +24,22 @@ class TaskService {
     return this.tasks.filter(t => t.farmId === farmId).map(t => ({ ...t }));
   }
 
-  async create(taskData) {
+async create(taskData) {
     await this.delay();
     const newTask = {
       ...taskData,
       Id: this.getNextId(),
       completed: false,
-      completedDate: null
+      completedDate: null,
+      reminderEnabled: taskData.reminderEnabled || false,
+      reminderTime: taskData.reminderTime || 60,
+      notificationSent: false
     };
     this.tasks.push(newTask);
     return { ...newTask };
   }
 
-  async update(id, taskData) {
+async update(id, taskData) {
     await this.delay();
     const index = this.tasks.findIndex(t => t.Id === id);
     if (index === -1) {
@@ -46,7 +49,11 @@ class TaskService {
     const updatedTask = {
       ...this.tasks[index],
       ...taskData,
-      Id: id
+      Id: id,
+      // Reset notification flag if reminder settings changed
+      notificationSent: taskData.reminderEnabled !== this.tasks[index].reminderEnabled || 
+                       taskData.reminderTime !== this.tasks[index].reminderTime 
+                       ? false : this.tasks[index].notificationSent
     };
     
     this.tasks[index] = updatedTask;

@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from "react";
-import Header from "@/components/organisms/Header";
+import React, { useEffect, useState } from "react";
+import CalendarView from "@/components/organisms/CalendarView";
+import NotificationSettings from "@/components/organisms/NotificationSettings";
+import { notificationService } from "@/services/api/notificationService";
+import { toast } from "react-toastify";
+import { endOfWeek, format, isAfter, isToday, startOfWeek } from "date-fns";
+import taskService from "@/services/api/taskService";
+import farmService from "@/services/api/farmService";
+import ApperIcon from "@/components/ApperIcon";
 import TaskCard from "@/components/molecules/TaskCard";
+import Header from "@/components/organisms/Header";
 import AddTaskModal from "@/components/organisms/AddTaskModal";
-import Button from "@/components/atoms/Button";
-import Select from "@/components/atoms/Select";
-import Badge from "@/components/atoms/Badge";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import ApperIcon from "@/components/ApperIcon";
-import taskService from "@/services/api/taskService";
-import farmService from "@/services/api/farmService";
-import { toast } from "react-toastify";
-import { format, isAfter, isToday, startOfWeek, endOfWeek } from "date-fns";
+import Farms from "@/components/pages/Farms";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Select from "@/components/atoms/Select";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -24,7 +28,20 @@ const Tasks = () => {
   const [filterFarm, setFilterFarm] = useState("");
   const [filterStatus, setFilterStatus] = useState("pending");
   const [filterType, setFilterType] = useState("");
-
+  const [viewMode, setViewMode] = useState("list"); // "list" or "calendar"
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState({
+    enabled: true,
+    reminderMinutes: 60,
+    categories: {
+      watering: true,
+      fertilizing: true,
+      harvesting: true,
+      planting: true,
+      maintenance: true,
+      pest_control: true
+    }
+  });
   const loadData = async () => {
     try {
       setLoading(true);
@@ -45,9 +62,60 @@ const Tasks = () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     loadData();
+    loadNotificationSettings();
   }, []);
+
+  const loadNotificationSettings = () => {
+    try {
+      const saved = localStorage.getItem('farmlog-notification-settings');
+      if (saved) {
+        setNotificationSettings(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Failed to load notification settings:', error);
+    }
+  };
+
+  const handleNotificationSettings = (settings) => {
+    setNotificationSettings(settings);
+    notificationService.saveSettings(settings);
+    
+    // Restart monitoring with new settings
+    notificationService.startMonitoring(tasks);
+  };
+
+  const handleAddTask = () => {
+    setEditingTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleCompleteTask = async (taskId) => {
+    try {
+      const task = tasks.find(t => t.Id === taskId);
+      if (!task) return;
+
+      const updatedTask = await taskService.update(taskId, { 
+        completed: true, 
+        completedDate: new Date().toISOString() 
+      });
+      
+      setTasks(prev => prev.map(t => 
+        t.Id === taskId ? updatedTask : t
+      ));
+      
+      toast.success("Task completed successfully!");
+    } catch (error) {
+      toast.error("Failed to complete task");
+      console.error("Task completion error:", error);
+    }
+  };
 
   const handleSaveTask = async (taskData) => {
     try {
@@ -68,41 +136,10 @@ const Tasks = () => {
       toast.error("Failed to save task");
       console.error("Task save error:", error);
     }
+}
   };
 
-  const handleCompleteTask = async (taskId) => {
-    try {
-      const task = tasks.find(t => t.Id === taskId);
-      if (task) {
-        const updatedTask = {
-          ...task,
-          completed: true,
-          completedDate: new Date().toISOString()
-        };
-        
-        await taskService.update(taskId, updatedTask);
-        
-        setTasks(prev => prev.map(t => 
-          t.Id === taskId ? updatedTask : t
-        ));
-        
-        toast.success("Task completed successfully!");
-      }
-    } catch (error) {
-      toast.error("Failed to complete task");
-      console.error("Task completion error:", error);
-    }
-  };
-
-  const handleEditTask = (task) => {
-    setEditingTask(task);
-    setIsModalOpen(true);
-  };
-
-  const handleAddTask = () => {
-    setEditingTask(null);
-    setIsModalOpen(true);
-  };
+  // Filter and sort tasks
 
   // Filter and sort tasks
   const filteredTasks = tasks.filter(task => {
@@ -153,19 +190,49 @@ const Tasks = () => {
   if (loading) return <Loading type="cards" />;
   if (error) return <Error message={error} onRetry={loadData} />;
 
-  return (
+return (
     <div className="space-y-6 p-6">
       <Header 
         title="Task Management" 
-        subtitle="Schedule and track your farm activities"
+        subtitle="Schedule and track your farm activities with reminders"
       >
-        <Button onClick={handleAddTask}>
-          <ApperIcon name="Plus" size={16} className="mr-2" />
-          Add Task
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            <ApperIcon name="Bell" size={16} className="mr-2" />
+            Notifications
+          </Button>
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="px-3 py-1 text-xs"
+            >
+              <ApperIcon name="List" size={14} className="mr-1" />
+              List
+            </Button>
+            <Button
+              variant={viewMode === "calendar" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("calendar")}
+              className="px-3 py-1 text-xs"
+            >
+              <ApperIcon name="Calendar" size={14} className="mr-1" />
+              Calendar
+            </Button>
+          </div>
+          <Button onClick={handleAddTask}>
+            <ApperIcon name="Plus" size={16} className="mr-2" />
+            Add Task
+          </Button>
+        </div>
       </Header>
 
-      {/* Task Statistics */}
+{/* Task Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg p-4 text-center shadow-sm border border-gray-100">
           <div className="text-2xl font-bold text-gray-900">{taskStats.total}</div>
@@ -188,6 +255,17 @@ const Tasks = () => {
           <div className="text-sm text-gray-600">Due Today</div>
         </div>
       </div>
+
+      {/* Render Calendar or List View */}
+      {viewMode === "calendar" ? (
+        <CalendarView
+          tasks={filteredTasks}
+          onTaskSelect={handleEditTask}
+          onTaskComplete={handleCompleteTask}
+          getFarmName={getFarmName}
+        />
+      ) : (
+        <>
 
       {/* Filters */}
       <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
@@ -293,8 +371,17 @@ const Tasks = () => {
           setIsModalOpen(false);
           setEditingTask(null);
         }}
-        onSave={handleSaveTask}
+onSave={handleSaveTask}
         task={editingTask}
+      />
+        </>
+      )}
+      <NotificationSettings
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={notificationSettings}
+        onSave={handleNotificationSettings}
+        tasks={tasks}
       />
     </div>
   );

@@ -35,7 +35,7 @@ const TaskCard = ({ task, onComplete, onEdit }) => {
 
   const priority = getTaskPriority();
 
-  return (
+return (
     <Card className="hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
@@ -52,16 +52,32 @@ const TaskCard = ({ task, onComplete, onEdit }) => {
               <p className="text-sm text-gray-600">{task.type}</p>
             </div>
           </div>
-          <Badge variant={priority.variant}>
-            {priority.label}
-          </Badge>
+          <div className="flex items-center space-x-2">
+            {task.reminderEnabled && !task.completed && (
+              <ApperIcon 
+                name="Bell" 
+                size={16} 
+                className="text-warning" 
+                title="Reminder enabled"
+              />
+            )}
+            <Badge variant={priority.variant}>
+              {priority.label}
+            </Badge>
+          </div>
         </div>
         
-        <div className="space-y-2 mb-4">
+<div className="space-y-2 mb-4">
           <div className="flex items-center text-sm text-gray-600">
             <ApperIcon name="Calendar" size={14} className="mr-2" />
-            Due: {format(new Date(task.dueDate), "MMM dd, yyyy")}
+            Due: {format(new Date(task.dueDate), "MMM dd, yyyy 'at' h:mm a")}
           </div>
+          {task.reminderTime && !task.completed && (
+            <div className="flex items-center text-sm text-warning">
+              <ApperIcon name="Bell" size={14} className="mr-2" />
+              Reminder: {task.reminderTime} minutes before
+            </div>
+          )}
           {task.notes && (
             <p className="text-sm text-gray-700">{task.notes}</p>
           )}
