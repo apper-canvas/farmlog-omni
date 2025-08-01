@@ -117,7 +117,7 @@ useEffect(() => {
     }
   };
 
-  const handleSaveTask = async (taskData) => {
+const handleSaveTask = async (taskData) => {
     try {
       if (editingTask) {
         const updatedTask = await taskService.update(editingTask.Id, taskData);
@@ -132,11 +132,11 @@ useEffect(() => {
       }
       
       setEditingTask(null);
+      setIsModalOpen(false);
     } catch (error) {
       toast.error("Failed to save task");
       console.error("Task save error:", error);
     }
-}
   };
 
   // Filter and sort tasks
